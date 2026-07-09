@@ -1793,3 +1793,234 @@ img {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--border-light);
 }
+
+/* ============================================
+   STORY VIEWER (INSTAGRAM STYLE)
+   ============================================ */
+.story-viewer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.story-viewer.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.story-container {
+    width: 100%;
+    max-width: 420px;
+    height: 100%;
+    max-height: 800px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.story-progress {
+    display: flex;
+    gap: 4px;
+    padding: 12px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
+}
+
+.progress-bar {
+    flex: 1;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0;
+    background: white;
+    border-radius: 2px;
+    animation: progress-fill 5s linear forwards;
+}
+
+.progress-bar.filled::after {
+    width: 100%;
+}
+
+.progress-bar.active::after {
+    animation: progress-fill 5s linear forwards;
+}
+
+@keyframes progress-fill {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+.story-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
+    position: absolute;
+    top: 24px;
+    left: 0;
+    right: 0;
+    z-index: 10;
+}
+
+.story-author-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid white;
+}
+
+.story-author-info {
+    flex: 1;
+}
+
+.story-author-info strong {
+    display: block;
+    font-size: 0.9rem;
+}
+
+.story-author-info small {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.75rem;
+}
+
+.story-close {
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    transition: var(--transition-fast);
+}
+
+.story-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.story-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.story-replies {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+}
+
+.story-reply-input {
+    flex: 1;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-full);
+    color: white;
+    font-size: 0.9rem;
+}
+
+.story-reply-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.story-reply-input:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.story-send-btn {
+    width: 40px;
+    height: 40px;
+    background: var(--accent-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.1rem;
+    transition: var(--transition-fast);
+}
+
+.story-send-btn:hover {
+    background: #5558e3;
+    transform: scale(1.1);
+}
+
+/* Story Navigation Zones */
+.story-viewer::before,
+.story-viewer::after {
+    content: '';
+    position: absolute;
+    top: 60px;
+    bottom: 80px;
+    width: 33.33%;
+    z-index: 5;
+}
+
+.story-viewer::before {
+    left: 0;
+    cursor: pointer;
+}
+
+.story-viewer::after {
+    right: 0;
+    cursor: pointer;
+}
+
+/* Story Animation */
+.story-container {
+    animation: story-open 0.3s ease;
+}
+
+@keyframes story-open {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .story-container {
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 0;
+    }
+}

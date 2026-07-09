@@ -765,9 +765,163 @@ function handleCreateStory(event) {
     showToast('Story berhasil dibuat!', 'success');
 }
 
+// ============================================
+// STORY VIEWER
+// ============================================
+let currentStoryIndex = 0;
+let currentStories = [];
+let storyTimer = null;
+
 function viewStory(storyId) {
-    showToast('Fitur story viewer akan segera hadir!', 'info');
+    const stories = DataStore.getStories();
+    const users = DataStore.getUsers();
+    const currentUser = DataStore.getCurrentUser();
+    
+    if (!currentUser) {
+        showToast('Silakan login terlebih dahulu!', 'error');
+        return;
+    }
+    
+    // Filter out own story from viewing (or include it based on preference)
+    const otherStories = stories.filter(s => s.userId !== currentUser.id);
+    
+    if (otherStories.length === 0) {
+        showToast('Belum ada story untuk dilihat!', 'info');
+        return;
+    }
+    
+    // Find starting index
+    const startIndex = otherStories.findIndex(s => s.id === storyId);
+    currentStoryIndex = startIndex >= 0 ? startIndex : 0;
+    currentStories = otherStories;
+    
+    // Create and show story viewer
+    showStoryViewer();
 }
+
+function showStoryViewer() {
+    if (currentStoryIndex >= currentStories.length) {
+        closeStoryViewer();
+        return;
+    }
+    
+    const story = currentStories[currentStoryIndex];
+    const users = DataStore.getUsers();
+    const author = users.find(u => u.id === story.userId);
+    
+    // Create story viewer overlay
+    let viewer = document.getElementById('storyViewer');
+    if (!viewer) {
+        viewer = document.createElement('div');
+        viewer.id = 'storyViewer';
+        viewer.className = 'story-viewer';
+        viewer.onclick = handleStoryClick;
+        document.body.appendChild(viewer);
+    }
+    
+    // Calculate progress
+    const progress = ((currentStoryIndex + 1) / currentStories.length) * 100;
+    
+    viewer.innerHTML = `
+        <div class="story-container">
+            <div class="story-progress">
+                ${currentStories.map((_, i) => `
+                    <div class="progress-bar ${i < currentStoryIndex ? 'filled' : ''} ${i === currentStoryIndex ? 'active' : ''}"></div>
+                `).join('')}
+            </div>
+            <div class="story-header">
+                <img src="${author?.avatar}" alt="${author?.name}" class="story-author-avatar">
+                <div class="story-author-info">
+                    <strong>${author?.username || 'User'}</strong>
+                    <small>${getTimeAgo(story.createdAt)}</small>
+                </div>
+                <button class="story-close" onclick="closeStoryViewer()">&times;</button>
+            </div>
+            <img src="${story.image}" alt="Story" class="story-image" onerror="this.src='https://via.placeholder.com/400x700?text=Story'">
+            <div class="story-replies">
+                <input type="text" placeholder="Balas..." class="story-reply-input" id="storyReplyInput">
+                <button class="story-send-btn" onclick="sendStoryReply()">➤</button>
+            </div>
+        </div>
+    `;
+    
+    viewer.classList.add('show');
+    
+    // Start timer (5 seconds per story)
+    startStoryTimer();
+}
+
+function handleStoryClick(e) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const width = rect.width;
+    
+    // Click left side = previous, right side = next
+    if (x < width / 3) {
+        previousStory();
+    } else if (x > (width * 2 / 3)) {
+        nextStory();
+    }
+}
+
+function previousStory() {
+    if (currentStoryIndex > 0) {
+        stopStoryTimer();
+        currentStoryIndex--;
+        showStoryViewer();
+    }
+}
+
+function nextStory() {
+    stopStoryTimer();
+    currentStoryIndex++;
+    if (currentStoryIndex < currentStories.length) {
+        showStoryViewer();
+    } else {
+        closeStoryViewer();
+    }
+}
+
+function startStoryTimer() {
+    stopStoryTimer();
+    storyTimer = setTimeout(() => {
+        nextStory();
+    }, 5000); // 5 seconds
+}
+
+function stopStoryTimer() {
+    if (storyTimer) {
+        clearTimeout(storyTimer);
+        storyTimer = null;
+    }
+}
+
+function closeStoryViewer() {
+    stopStoryTimer();
+    const viewer = document.getElementById('storyViewer');
+    if (viewer) {
+        viewer.classList.remove('show');
+        setTimeout(() => viewer.remove(), 300);
+    }
+}
+
+function sendStoryReply() {
+    const input = document.getElementById('storyReplyInput');
+    if (input && input.value.trim()) {
+        showToast('Balasan terkirim! 💬', 'success');
+        input.value = '';
+    }
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', (e) => {
+    const viewer = document.getElementById('storyViewer');
+    if (viewer && viewer.classList.contains('show')) {
+        if (e.key === 'ArrowLeft') previousStory();
+        if (e.key === 'ArrowRight') nextStory();
+        if (e.key === 'Escape') closeStoryViewer();
+    }
+});
 
 // ============================================
 // NOTIFICATIONS

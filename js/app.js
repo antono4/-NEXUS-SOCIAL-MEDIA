@@ -90,6 +90,17 @@ const DataStore = {
             ];
             localStorage.setItem(this.KEYS.USERS, JSON.stringify(sampleUsers));
         }
+        
+        // Initialize sample comments
+        if (!localStorage.getItem(this.KEYS.COMMENTS)) {
+            const sampleComments = [
+                { id: 'comment_1', postId: 'post_1', userId: 'user_2', text: 'Foto yang indah! Keren banget bro! 🌅', createdAt: Date.now() - 1800000 },
+                { id: 'comment_2', postId: 'post_1', userId: 'user_3', text: 'Dimana lokasinya? Pengen kesana juga!', createdAt: Date.now() - 3600000 },
+                { id: 'comment_3', postId: 'post_2', userId: 'user_1', text: 'Talentanya amazing! 💯', createdAt: Date.now() - 7200000 },
+                { id: 'comment_4', postId: 'post_3', userId: 'user_4', text: 'Ditunggu ya musiknya! 🎵', createdAt: Date.now() - 10800000 }
+            ];
+            localStorage.setItem(this.KEYS.COMMENTS, JSON.stringify(sampleComments));
+        }
 
         if (!localStorage.getItem(this.KEYS.POSTS)) {
             const samplePosts = [
@@ -614,11 +625,14 @@ function openPostDetail(postId) {
 }
 
 function loadComments(postId) {
-    const comments = DataStore.getComments?.() || [];
+    const comments = DataStore.get(DataStore.KEYS.COMMENTS) || [];
     const postComments = comments.filter(c => c.postId === postId);
     const users = DataStore.getUsers();
     
-    document.getElementById('commentsList').innerHTML = postComments.length ? 
+    const commentsList = document.getElementById('commentsList');
+    if (!commentsList) return;
+    
+    commentsList.innerHTML = postComments.length ? 
         postComments.map(comment => {
             const author = users.find(u => u.id === comment.userId);
             return `
@@ -1012,16 +1026,64 @@ function followUser(userId, btn) {
 function searchUsers() {
     const query = document.getElementById('searchInput')?.value.toLowerCase() || '';
     const users = DataStore.getUsers();
+    const currentUser = DataStore.getCurrentUser();
     
-    // Filter posts or show results
-    if (query.length > 0) {
-        const results = users.filter(u => 
-            u.username.toLowerCase().includes(query) || 
-            u.name.toLowerCase().includes(query)
-        );
-        console.log('Search results:', results);
+    if (query.length < 2) return;
+    
+    const results = users.filter(u => 
+        u.id !== currentUser.id &&
+        (u.username.toLowerCase().includes(query) || 
+        u.name.toLowerCase().includes(query))
+    );
+    
+    // Show search results in a dropdown
+    const searchBox = document.querySelector('.search-box');
+    let resultsDiv = document.getElementById('searchResults');
+    
+    if (!resultsDiv) {
+        resultsDiv = document.createElement('div');
+        resultsDiv.id = 'searchResults';
+        resultsDiv.className = 'search-results-dropdown';
+        searchBox.appendChild(resultsDiv);
+    }
+    
+    if (results.length > 0) {
+        resultsDiv.innerHTML = results.map(user => `
+            <div class="search-result-item" onclick="viewUserProfile('${user.id}')">
+                <img src="${user.avatar}" alt="${user.name}">
+                <div>
+                    <strong>${user.username}</strong>
+                    <small>${user.name}</small>
+                </div>
+            </div>
+        `).join('');
+        resultsDiv.style.display = 'block';
+    } else {
+        resultsDiv.style.display = 'none';
     }
 }
+
+function viewUserProfile(userId) {
+    // Hide search results
+    const resultsDiv = document.getElementById('searchResults');
+    if (resultsDiv) resultsDiv.style.display = 'none';
+    
+    // Navigate to profile (for now, just show a toast)
+    const users = DataStore.getUsers();
+    const user = users.find(u => u.id === userId);
+    if (user) {
+        showToast(`Melihat profil ${user.username}`, 'info');
+    }
+}
+
+// Close search results when clicking outside
+document.addEventListener('click', (e) => {
+    const searchBox = document.querySelector('.search-box');
+    const resultsDiv = document.getElementById('searchResults');
+    if (searchBox && resultsDiv && !searchBox.contains(e.target)) {
+        resultsDiv.style.display = 'none';
+    }
+});
 
 // ============================================
 // MESSAGES
@@ -1053,18 +1115,96 @@ function loadMessages() {
 }
 
 function showSection(section) {
-    showToast(`Section ${section} akan segera hadir!`, 'info');
-}
-
-function openChat(messageId) {
-    showToast('Fitur chat akan segera hadir!', 'info');
-}
-
-function showSection(section) {
     if (section === 'messages') {
         document.getElementById('messagesModal').classList.add('show');
         loadMessages();
+    } else if (section === 'home') {
+        loadPosts();
+        loadStories();
+        loadSuggestions();
+    } else if (section === 'explore') {
+        showToast('Fitur Explore akan segera hadir!', 'info');
     }
+}
+
+let currentChatId = null;
+let currentChatPartner = null;
+
+function openChat(messageId) {
+    const messages = DataStore.getMessages();
+    const users = DataStore.getUsers();
+    const currentUser = DataStore.getCurrentUser();
+    
+    const chat = messages.find(m => m.id === messageId);
+    if (!chat) return;
+    
+    const otherUserId = chat.participants.find(p => p !== currentUser.id);
+    const otherUser = users.find(u => u.id === otherUserId);
+    
+    currentChatId = messageId;
+    currentChatPartner = otherUser;
+    
+    const chatArea = document.getElementById('chatArea');
+    
+    chatArea.innerHTML = `
+        <div class="chat-header">
+            <img src="${otherUser?.avatar}" alt="${otherUser?.name}" class="post-avatar">
+            <div>
+                <strong>${otherUser?.username}</strong>
+                <small style="color: var(--text-muted)">online</small>
+            </div>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            ${chat.messages.map(msg => `
+                <div class="chat-message ${msg.senderId === currentUser.id ? 'sent' : 'received'}">
+                    ${msg.text}
+                </div>
+            `).join('')}
+        </div>
+        <div class="chat-input">
+            <input type="text" id="chatInput" placeholder="Ketik pesan..." onkeypress="if(event.key==='Enter')sendChatMessage()">
+            <button class="btn btn-primary" onclick="sendChatMessage()">Kirim</button>
+        </div>
+    `;
+    
+    // Scroll to bottom
+    setTimeout(() => {
+        const chatMessages = document.getElementById('chatMessages');
+        if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+    }, 100);
+}
+
+function sendChatMessage() {
+    const input = document.getElementById('chatInput');
+    if (!input || !input.value.trim()) return;
+    
+    const messages = DataStore.getMessages();
+    const currentUser = DataStore.getCurrentUser();
+    const chat = messages.find(m => m.id === currentChatId);
+    
+    if (!chat) return;
+    
+    const newMessage = {
+        senderId: currentUser.id,
+        text: input.value.trim(),
+        createdAt: Date.now()
+    };
+    
+    chat.messages.push(newMessage);
+    DataStore.set(DataStore.KEYS.MESSAGES, messages);
+    
+    // Add message to UI
+    const chatMessages = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'chat-message sent';
+    messageDiv.textContent = newMessage.text;
+    chatMessages.appendChild(messageDiv);
+    
+    // Scroll to bottom
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+    // Clear input
+    input.value = '';
 }
 
 // ============================================

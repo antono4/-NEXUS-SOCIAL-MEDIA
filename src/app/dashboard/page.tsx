@@ -418,9 +418,23 @@ export default function DashboardPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black z-50 flex items-center justify-center"
-            onClick={() => setShowStories(false)}
           >
-            <div className="absolute top-4 left-4 flex items-center gap-3 z-10">
+            {/* Progress bars */}
+            <div className="absolute top-4 left-4 right-4 flex gap-1 z-20">
+              {stories.map((_, i) => (
+                <div key={i} className="flex-1 h-1 rounded-full bg-white/30 overflow-hidden">
+                  <motion.div
+                    className="h-full bg-white"
+                    initial={{ width: i < activeStoryIndex ? "100%" : "0%" }}
+                    animate={{ width: i === activeStoryIndex ? "100%" : i < activeStoryIndex ? "100%" : "0%" }}
+                    transition={{ duration: 5, ease: "linear" }}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Header */}
+            <div className="absolute top-8 left-4 flex items-center gap-3 z-10">
               <img
                 src={
                   stories[activeStoryIndex].author.avatar ||
@@ -429,19 +443,39 @@ export default function DashboardPage() {
                 alt={stories[activeStoryIndex].author.name || "User"}
                 className="w-10 h-10 rounded-full border-2 border-white"
               />
-              <span className="font-medium">
-                {stories[activeStoryIndex].author.name ||
-                  stories[activeStoryIndex].author.username}
-              </span>
+              <div>
+                <span className="font-medium text-white">
+                  {stories[activeStoryIndex].author.name ||
+                    stories[activeStoryIndex].author.username}
+                </span>
+                <p className="text-xs text-white/60">{formatRelativeTime(stories[activeStoryIndex].createdAt)}</p>
+              </div>
             </div>
 
             <button
               onClick={() => setShowStories(false)}
-              className="absolute top-4 right-4 p-2 bg-white/10 rounded-full z-10"
+              className="absolute top-8 right-4 p-2 bg-white/10 rounded-full z-10"
             >
-              <X className="w-6 h-6" />
+              <X className="w-6 h-6 text-white" />
             </button>
 
+            {/* Navigation zones */}
+            <div 
+              className="absolute left-0 top-20 bottom-20 w-1/3 z-10 cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (activeStoryIndex > 0) setActiveStoryIndex(activeStoryIndex - 1);
+              }}
+            />
+            <div 
+              className="absolute right-0 top-20 bottom-20 w-1/3 z-10 cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (activeStoryIndex < stories.length - 1) setActiveStoryIndex(activeStoryIndex + 1);
+              }}
+            />
+
+            {/* Story Image */}
             <div className="w-full max-w-md h-full bg-dark-400">
               <img
                 src={stories[activeStoryIndex].image}
@@ -450,15 +484,15 @@ export default function DashboardPage() {
               />
             </div>
 
-            {/* Story navigation */}
+            {/* Story reply */}
             <div className="absolute bottom-8 left-4 right-4 flex gap-2 z-10">
               <input
                 type="text"
                 placeholder="Kirim pesan..."
-                className="flex-1 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 focus:outline-none placeholder:text-white/60"
+                className="flex-1 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 focus:outline-none placeholder:text-white/60 text-white"
               />
               <button className="p-3 bg-white/10 backdrop-blur-sm rounded-full">
-                <Send className="w-5 h-5" />
+                <Send className="w-5 h-5 text-white" />
               </button>
             </div>
           </motion.div>

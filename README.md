@@ -1,6 +1,15 @@
-# 🎉 Nexus Social Media - Static Version
+# 🎉 Nexus Social Media Platform
 
-Platform media sosial statis yang bisa langsung di-hosting di **GitHub Pages** tanpa server!
+Platform media sosial lengkap dengan **2 versi deployment**:
+
+| Versi | Deploy ke | Fitur |
+|-------|-----------|-------|
+| **Main Branch (Static)** | GitHub Pages | Posts, Stories, Likes, Comments, Followers, Messages |
+| **Fullstack Branch** | Vercel | + PostgreSQL Database, Auth, API Routes |
+
+---
+
+## 🚀 Quick Deploy
 
 ## ✨ Fitur
 
@@ -43,8 +52,26 @@ Platform media sosial statis yang bisa langsung di-hosting di **GitHub Pages** t
 
 Website Anda akan tersedia di:
 ```
-https://username.github.io/repository-name/
+https://antono4.github.io/-NEXUS-SOCIAL-MEDIA/
 ```
+
+---
+
+## ☁️ Deploy ke Vercel (Full-Stack Version)
+
+Versi full-stack dengan database PostgreSQL tersedia di branch `fullstack`:
+
+1. **Buka Vercel**: https://vercel.com/new
+2. **Import dari GitHub**: Pilih repository `antono4/-NEXUS-SOCIAL-MEDIA`
+3. **Pilih Branch**: `fullstack`
+4. **Tambahkan Environment Variables**:
+   - `DATABASE_URL` - PostgreSQL connection string
+   - `NEXTAUTH_SECRET` - Secret key (minimal 32 karakter)
+   - `NEXTAUTH_URL` - URL Vercel Anda
+
+5. **Deploy!** Klik "Deploy"
+
+---
 
 ## 📁 Struktur File
 

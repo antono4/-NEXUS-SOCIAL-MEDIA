@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus - Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="dark-mode">
+    <!-- Navigation -->
+    <nav class="navbar-fixed">
+        <div class="nav-container">
+            <a href="app.html" class="logo">
+                <span class="logo-icon">N</span>
+                <span class="logo-text">Nexus</span>
+            </a>
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Cari pengguna..." oninput="searchUsers()">
+            </div>
+            <div class="nav-icons">
+                <button class="nav-icon-btn" onclick="showSection('home')" title="Beranda">🏠</button>
+                <button class="nav-icon-btn" onclick="showSection('explore')" title="Jelajahi">📡</button>
+                <button class="nav-icon-btn" onclick="showNotifications()" title="Notifikasi">🔔
+                    <span class="badge" id="notifBadge">3</span>
+                </button>
+                <button class="nav-icon-btn" onclick="showSection('messages')" title="Pesan">💬</button>
+            </div>
+            <div class="user-menu" onclick="toggleUserMenu()">
+                <img id="navAvatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=You" alt="Avatar" class="nav-avatar">
+                <span id="navUsername">User</span>
+                <span class="dropdown-arrow">▼</span>
+                <div class="dropdown-menu" id="userDropdown">
+                    <a href="profile.html"><span>👤</span> Profil</a>
+                    <a href="index.html"><span>📝</span> Posts</a>
+                    <a href="index.html" onclick="logout()"><span>🚪</span> Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Stories Section -->
+        <section class="stories-section">
+            <div class="stories-container" id="storiesContainer">
+                <div class="story-item add-story" onclick="showCreateStory()">
+                    <div class="add-story-icon">+</div>
+                    <span>Cerita Baru</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Create Post -->
+        <section class="create-post-section">
+            <div class="create-post-card">
+                <img id="postCreatorAvatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=You" alt="Avatar" class="post-creator-avatar">
+                <button class="create-post-btn" onclick="showCreatePost()">
+                    Apa yang Anda pikirkan?
+                </button>
+            </div>
+        </section>
+
+        <!-- Feed -->
+        <section class="feed-section" id="feedSection">
+            <!-- Posts will be loaded here -->
+        </section>
+    </main>
+
+    <!-- Right Sidebar -->
+    <aside class="right-sidebar">
+        <div class="suggestions-section">
+            <h3>Orang yang Mungkin Anda Kenali</h3>
+            <div id="suggestionsList">
+                <!-- Suggestions will be loaded here -->
+            </div>
+        </div>
+    </aside>
+
+    <!-- Create Post Modal -->
+    <div id="createPostModal" class="modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2>Buat Postingan</h2>
+                <button class="modal-close" onclick="closeModal('createPostModal')">&times;</button>
+            </div>
+            <form id="createPostForm" onsubmit="handleCreatePost(event)">
+                <div class="form-group">
+                    <textarea id="postContent" placeholder="Apa yang Anda pikirkan?" rows="5" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="postImage" class="file-upload-label">
+                        <span>📷</span> Tambahkan Foto
+                    </label>
+                    <input type="file" id="postImage" accept="image/*" hidden onchange="previewImage(this)">
+                    <img id="imagePreview" class="image-preview" style="display:none;">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-ghost" onclick="closeModal('createPostModal')">Batal</button>
+                    <button type="submit" class="btn btn-gradient">Posting</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create Story Modal -->
+    <div id="createStoryModal" class="modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2>Buat Story</h2>
+                <button class="modal-close" onclick="closeModal('createStoryModal')">&times;</button>
+            </div>
+            <form id="createStoryForm" onsubmit="handleCreateStory(event)">
+                <div class="form-group">
+                    <label for="storyImage" class="file-upload-label story-upload">
+                        <span>📷</span> Pilih Gambar Story
+                    </label>
+                    <input type="file" id="storyImage" accept="image/*" hidden onchange="previewStoryImage(this)">
+                    <img id="storyPreview" class="image-preview" style="display:none;">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-ghost" onclick="closeModal('createStoryModal')">Batal</button>
+                    <button type="submit" class="btn btn-gradient">Bagikan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Post Detail Modal -->
+    <div id="postDetailModal" class="modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2>Detail Postingan</h2>
+                <button class="modal-close" onclick="closeModal('postDetailModal')">&times;</button>
+            </div>
+            <div id="postDetailContent">
+                <!-- Post detail will be loaded here -->
+            </div>
+            <div class="comments-section">
+                <h4>Komentar</h4>
+                <div id="commentsList">
+                    <!-- Comments will be loaded here -->
+                </div>
+                <form id="commentForm" onsubmit="handleAddComment(event)" class="comment-form">
+                    <input type="text" id="commentInput" placeholder="Tambahkan komentar...">
+                    <button type="submit" class="btn btn-primary btn-sm">Kirim</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifications Modal -->
+    <div id="notificationsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Notifikasi</h2>
+                <button class="modal-close" onclick="closeModal('notificationsModal')">&times;</button>
+            </div>
+            <div id="notificationsList" class="notifications-list">
+                <!-- Notifications will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2>Profil</h2>
+                <button class="modal-close" onclick="closeModal('profileModal')">&times;</button>
+            </div>
+            <div id="profileContent">
+                <!-- Profile will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Messages Modal -->
+    <div id="messagesModal" class="modal">
+        <div class="modal-content modal-lg messages-modal">
+            <div class="modal-header">
+                <h2>Pesan</h2>
+                <button class="modal-close" onclick="closeModal('messagesModal')">&times;</button>
+            </div>
+            <div class="messages-container">
+                <div class="messages-list" id="messagesList">
+                    <!-- Conversations will be loaded here -->
+                </div>
+                <div class="chat-area" id="chatArea">
+                    <div class="chat-placeholder">
+                        <span>💬</span>
+                        <p>Pilih percakapan untuk memulai chat</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

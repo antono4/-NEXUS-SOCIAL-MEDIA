@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Halaman Tidak Ditemukan | Nexus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .error-page {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+        .error-code {
+            font-size: 8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 20px;
+        }
+        .error-title {
+            font-size: 2rem;
+            margin-bottom: 12px;
+        }
+        .error-desc {
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            max-width: 400px;
+        }
+    </style>
+</head>
+<body class="dark-mode">
+    <div class="bg-effects">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+    </div>
+    
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">N</span>
+                <span class="logo-text">Nexus</span>
+            </a>
+        </div>
+    </nav>
+    
+    <main class="error-page">
+        <div class="error-code">404</div>
+        <h1 class="error-title">Halaman Tidak Ditemukan</h1>
+        <p class="error-desc">
+            Maaf, halaman yang Anda cari tidak ditemukan. 
+            Mungkin sudah dipindahkan atau dihapus.
+        </p>
+        <a href="index.html" class="btn btn-gradient">Kembali ke Beranda</a>
+    </main>
+</body>
+</html>

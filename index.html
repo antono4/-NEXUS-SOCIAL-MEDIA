@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus - Social Media Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="dark-mode">
+    <!-- Background Effects -->
+    <div class="bg-effects">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">N</span>
+                <span class="logo-text">Nexus</span>
+            </a>
+            <div class="nav-actions">
+                <button class="btn btn-ghost" onclick="showLogin()">Masuk</button>
+                <button class="btn btn-primary" onclick="showRegister()">Daftar</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <main class="hero-section">
+        <div class="hero-content">
+            <div class="hero-text">
+                <span class="hero-badge">✨ Platform Media Sosial</span>
+                <h1 class="hero-title">
+                    <span class="gradient-text">Nexus</span><br>
+                    Hubungkan Dunia
+                </h1>
+                <p class="hero-description">
+                    Platform media sosial modern dengan fitur lengkap. Bagikan momen, 
+                    koneksi dengan teman, dan eksplorasi konten menarik dalam satu platform.
+                </p>
+                <div class="hero-features">
+                    <div class="feature-item">
+                        <span class="feature-icon">📸</span>
+                        <span>Stories</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">💬</span>
+                        <span>Chat</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">📱</span>
+                        <span>Responsive</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">🔒</span>
+                        <span>Privasi</span>
+                    </div>
+                </div>
+                <button class="btn btn-gradient btn-lg" onclick="showRegister()">
+                    Mulai Sekarang →
+                </button>
+            </div>
+            <div class="hero-visual">
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="app-header">
+                            <span class="app-logo">N</span>
+                            <span>Nexus</span>
+                        </div>
+                        <div class="app-story">
+                            <div class="story-circle active">
+                                <div class="story-ring"></div>
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=You" alt="You">
+                            </div>
+                            <div class="story-circle">
+                                <div class="story-ring"></div>
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alice" alt="Alice">
+                            </div>
+                            <div class="story-circle">
+                                <div class="story-ring"></div>
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Bob" alt="Bob">
+                            </div>
+                            <div class="story-circle">
+                                <div class="story-ring"></div>
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Carol" alt="Carol">
+                            </div>
+                        </div>
+                        <div class="app-post">
+                            <div class="post-header">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=David" alt="David">
+                                <div>
+                                    <strong>david_official</strong>
+                                    <small>2 jam lalu</small>
+                                </div>
+                            </div>
+                            <div class="post-image"></div>
+                            <div class="post-actions">
+                                <span>❤️ 1.2K</span>
+                                <span>💬 89</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <h2 class="section-title">Fitur Unggulan</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon-wrapper">📝</div>
+                <h3>Postingan</h3>
+                <p>Bagikan teks, foto, dan video dengan teman-teman Anda</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon-wrapper">💬</div>
+                <h3>Komentar</h3>
+                <p>Berdiskusi dan berinteraksi melalui komentar</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon-wrapper">❤️</div>
+                <h3>Reaksi</h3>
+                <p>Suarakan perasaan Anda dengan berbagai reaksi</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon-wrapper">👥</div>
+                <h3>Followers</h3>
+                <p>Ikuti orang-orang yang menginspirasi Anda</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon-wrapper">📸</div>
+                <h3>Stories</h3>
+                <p>Bagikan momen yang expire dalam 24 jam</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon-wrapper">🔖</div>
+                <h3>Bookmark</h3>
+                <p>Simpan konten favorit untuk nanti</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('loginModal')">&times;</button>
+            <div class="modal-header">
+                <span class="logo-icon">N</span>
+                <h2>Masuk ke Nexus</h2>
+            </div>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" placeholder="nama@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-gradient btn-block">Masuk</button>
+            </form>
+            <p class="modal-footer">
+                Belum punya akun? <a href="#" onclick="switchModal('loginModal', 'registerModal')">Daftar</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('registerModal')">&times;</button>
+            <div class="modal-header">
+                <span class="logo-icon">N</span>
+                <h2>Daftar Akun Baru</h2>
+            </div>
+            <form id="registerForm" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label for="regName">Nama Lengkap</label>
+                    <input type="text" id="regName" placeholder="John Doe" required>
+                </div>
+                <div class="form-group">
+                    <label for="regUsername">Username</label>
+                    <input type="text" id="regUsername" placeholder="johndoe" required>
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">Email</label>
+                    <input type="email" id="regEmail" placeholder="nama@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Password</label>
+                    <input type="password" id="regPassword" placeholder="Min. 6 karakter" minlength="6" required>
+                </div>
+                <button type="submit" class="btn btn-gradient btn-block">Daftar</button>
+            </form>
+            <p class="modal-footer">
+                Sudah punya akun? <a href="#" onclick="switchModal('registerModal', 'loginModal')">Masuk</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

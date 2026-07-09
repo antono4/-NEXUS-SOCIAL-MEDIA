@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus - Profil</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="dark-mode">
+    <!-- Navigation -->
+    <nav class="navbar-fixed">
+        <div class="nav-container">
+            <a href="app.html" class="logo">
+                <span class="logo-icon">N</span>
+                <span class="logo-text">Nexus</span>
+            </a>
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" placeholder="Cari pengguna...">
+            </div>
+            <div class="nav-actions">
+                <a href="app.html" class="btn btn-ghost">Kembali</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Profile Content -->
+    <main class="profile-content">
+        <!-- Profile Header -->
+        <section class="profile-header" id="profileHeader">
+            <!-- Will be loaded by JS -->
+        </section>
+
+        <!-- Profile Tabs -->
+        <section class="profile-tabs">
+            <button class="tab-btn active" onclick="showProfileTab('posts')">
+                <span>📝</span> Posts
+            </button>
+            <button class="tab-btn" onclick="showProfileTab('saved')">
+                <span>🔖</span> Saved
+            </button>
+            <button class="tab-btn" onclick="showProfileTab('followers')">
+                <span>👥</span> Followers
+            </button>
+            <button class="tab-btn" onclick="showProfileTab('following')">
+                <span>👤</span> Following
+            </button>
+        </section>
+
+        <!-- Tab Contents -->
+        <section class="profile-posts" id="profilePosts">
+            <!-- Posts will be loaded here -->
+        </section>
+
+        <section class="profile-saved hidden" id="profileSaved">
+            <div class="empty-state">
+                <span>🔖</span>
+                <h3>Belum Ada Postingan Tersimpan</h3>
+                <p>Simpan postingan favorit untuk dibaca nanti</p>
+            </div>
+        </section>
+
+        <section class="profile-followers hidden" id="profileFollowers">
+            <div id="followersList" class="followers-grid">
+                <!-- Followers will be loaded here -->
+            </div>
+        </section>
+
+        <section class="profile-following hidden" id="profileFollowing">
+            <div id="followingList" class="followers-grid">
+                <!-- Following will be loaded here -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Edit Profile Modal -->
+    <div id="editProfileModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Profil</h2>
+                <button class="modal-close" onclick="closeModal('editProfileModal')">&times;</button>
+            </div>
+            <form id="editProfileForm" onsubmit="handleEditProfile(event)">
+                <div class="form-group text-center">
+                    <div class="avatar-edit">
+                        <img id="editAvatarPreview" src="https://api.dicebear.com/7.x/avataaars/svg?seed=You" alt="Avatar">
+                        <label for="editAvatar" class="edit-avatar-btn">📷</label>
+                        <input type="file" id="editAvatar" accept="image/*" hidden onchange="previewEditAvatar(this)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="editName">Nama</label>
+                    <input type="text" id="editName" required>
+                </div>
+                <div class="form-group">
+                    <label for="editBio">Bio</label>
+                    <textarea id="editBio" rows="3" placeholder="Ceritakan tentang diri Anda..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="editLocation">Lokasi</label>
+                    <input type="text" id="editLocation" placeholder="Jakarta, Indonesia">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-ghost" onclick="closeModal('editProfileModal')">Batal</button>
+                    <button type="submit" class="btn btn-gradient">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="js/app.js"></script>
+    <script>
+        // Load profile on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProfile();
+        });
+    </script>
+</body>
+</html>

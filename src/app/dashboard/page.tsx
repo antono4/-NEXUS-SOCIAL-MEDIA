@@ -477,6 +477,8 @@ function PostCard({
 }) {
   const [showComments, setShowComments] = useState(false);
   const [newComment, setNewComment] = useState("");
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [replyText, setReplyText] = useState("");
 
   const handleComment = async () => {
     if (!newComment.trim()) return;
@@ -491,6 +493,23 @@ function PostCard({
       }
     } catch (error) {
       console.error("Error posting comment:", error);
+    }
+  };
+
+  const handleReply = async (commentId: string) => {
+    if (!replyText.trim()) return;
+    try {
+      const res = await fetch("/api/comments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ postId: post.id, content: replyText, parentId: commentId }),
+      });
+      if (res.ok) {
+        setReplyText("");
+        setReplyingTo(null);
+      }
+    } catch (error) {
+      console.error("Error posting reply:", error);
     }
   };
 
@@ -613,30 +632,77 @@ function PostCard({
             <div className="p-4 space-y-4">
               {post.comments && post.comments.length > 0 ? (
                 post.comments.map((comment) => (
-                  <div key={comment.id} className="flex gap-3">
-                    <img
-                      src={comment.author.avatar || "/default-avatar.png"}
-                      alt={comment.author.name || "User"}
-                      className="w-8 h-8 rounded-full flex-shrink-0"
-                    />
-                    <div className="flex-1">
-                      <div className="bg-dark-400 rounded-2xl px-4 py-2">
-                        <span className="font-semibold text-sm">
-                          {comment.author.name || comment.author.username}
-                        </span>
-                        <p className="text-sm mt-1">{comment.content}</p>
-                      </div>
-                      <div className="flex items-center gap-4 mt-1 px-2 text-xs text-white/40">
-                        <span>{formatRelativeTime(comment.createdAt)}</span>
-                        <button className="hover:text-white">Balas</button>
-                        <button className="hover:text-white">Like</button>
+                  <div key={comment.id}>
+                    <div className="flex gap-3">
+                      <img
+                        src={comment.author.avatar || "/default-avatar.png"}
+                        alt={comment.author.name || "User"}
+                        className="w-8 h-8 rounded-full flex-shrink-0"
+                      />
+                      <div className="flex-1">
+                        <div className="bg-dark-400 rounded-2xl px-4 py-2">
+                          <span className="font-semibold text-sm">
+                            {comment.author.name || comment.author.username}
+                          </span>
+                          <p className="text-sm mt-1">{comment.content}</p>
+                        </div>
+                        <div className="flex items-center gap-4 mt-1 px-2 text-xs text-white/40">
+                          <span>{formatRelativeTime(comment.createdAt)}</span>
+                          <button 
+                            className="hover:text-white"
+                            onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
+                          >
+                            Balas
+                          </button>
+                        </div>
+                        
+                        {/* Reply Input */}
+                        {replyingTo === comment.id && (
+                          <div className="flex items-center gap-2 mt-2 ml-2">
+                            <input
+                              type="text"
+                              value={replyText}
+                              onChange={(e) => setReplyText(e.target.value)}
+                              placeholder="Tulis balasan..."
+                              className="flex-1 bg-dark-400 rounded-full px-4 py-2 text-sm focus:outline-none"
+                              onKeyDown={(e) => e.key === 'Enter' && handleReply(comment.id)}
+                            />
+                            <button
+                              onClick={() => handleReply(comment.id)}
+                              className="text-primary-400 hover:text-primary-300"
+                            >
+                              <Send className="w-4 h-4" />
+                            </button>
+                          </div>
+                        )}
+                        
+                        {/* Replies */}
+                        {comment.replies && comment.replies.length > 0 && (
+                          <div className="ml-4 mt-3 pl-4 border-l-2 border-white/10 space-y-3">
+                            {comment.replies.map((reply) => (
+                              <div key={reply.id} className="flex gap-2">
+                                <img
+                                  src={reply.author.avatar || "/default-avatar.png"}
+                                  alt={reply.author.name || "User"}
+                                  className="w-6 h-6 rounded-full flex-shrink-0"
+                                />
+                                <div className="flex-1 bg-dark-400 rounded-2xl px-3 py-1">
+                                  <span className="font-semibold text-xs">
+                                    {reply.author.name || reply.author.username}
+                                  </span>
+                                  <p className="text-xs mt-0.5">{reply.content}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
                 ))
               ) : (
                 <p className="text-center text-white/40 py-4">
-                  Belum ada komentar
+                  Belum ada komentar. Jadilah yang pertama!
                 </p>
               )}
 
@@ -654,6 +720,7 @@ function PostCard({
                     onChange={(e) => setNewComment(e.target.value)}
                     placeholder="Tulis komentar..."
                     className="flex-1 bg-transparent text-sm focus:outline-none placeholder:text-white/40"
+                    onKeyDown={(e) => e.key === 'Enter' && handleComment()}
                   />
                   <button
                     onClick={handleComment}

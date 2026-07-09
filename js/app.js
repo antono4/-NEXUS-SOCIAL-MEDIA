@@ -626,27 +626,126 @@ function openPostDetail(postId) {
 
 function loadComments(postId) {
     const comments = DataStore.get(DataStore.KEYS.COMMENTS) || [];
-    const postComments = comments.filter(c => c.postId === postId);
     const users = DataStore.getUsers();
+    const currentUser = DataStore.getCurrentUser();
+    
+    // Get top-level comments for this post
+    const postComments = comments.filter(c => c.postId === postId && !c.parentId);
+    // Get replies for this post
+    const replies = comments.filter(c => c.postId === postId && c.parentId);
     
     const commentsList = document.getElementById('commentsList');
     if (!commentsList) return;
     
-    commentsList.innerHTML = postComments.length ? 
-        postComments.map(comment => {
-            const author = users.find(u => u.id === comment.userId);
-            return `
-                <div class="comment-item">
-                    <img src="${author?.avatar}" alt="${author?.name}" class="comment-avatar">
-                    <div class="comment-content">
+    if (postComments.length === 0) {
+        commentsList.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 20px;">Belum ada komentar. Jadilah yang pertama!</p>';
+        return;
+    }
+    
+    commentsList.innerHTML = postComments.map(comment => {
+        const author = users.find(u => u.id === comment.userId);
+        const commentReplies = replies.filter(r => r.parentId === comment.id);
+        
+        return `
+            <div class="comment-item">
+                <img src="${author?.avatar}" alt="${author?.name}" class="comment-avatar">
+                <div class="comment-content">
+                    <div class="comment-bubble">
                         <span class="comment-user">${author?.username}</span>
                         <p class="comment-text">${comment.text}</p>
-                        <span class="comment-time">${getTimeAgo(comment.createdAt)}</span>
                     </div>
+                    <div class="comment-actions">
+                        <span class="comment-time">${getTimeAgo(comment.createdAt)}</span>
+                        <button class="comment-action-btn" onclick="showReplyInput('${comment.id}')">Balas</button>
+                        ${comment.userId === currentUser?.id ? '<button class="comment-action-btn delete" onclick="deleteComment(\'' + comment.id + '\', \'' + postId + '\')">Hapus</button>' : ''}
+                    </div>
+                    
+                    <!-- Reply Input -->
+                    <div id="replyInput_${comment.id}" class="reply-input" style="display: none;">
+                        <input type="text" id="replyText_${comment.id}" placeholder="Tulis balasan..." onkeypress="if(event.key==='Enter')addReply('${comment.id}', '${postId}')">
+                        <button onclick="addReply('${comment.id}', '${postId}')">Kirim</button>
+                    </div>
+                    
+                    <!-- Replies -->
+                    ${commentReplies.length > 0 ? `
+                        <div class="comment-replies">
+                            ${commentReplies.map(reply => {
+                                const replyAuthor = users.find(u => u.id === reply.userId);
+                                return `
+                                    <div class="reply-item">
+                                        <img src="${replyAuthor?.avatar}" alt="${replyAuthor?.name}" class="reply-avatar">
+                                        <div class="reply-content">
+                                            <span class="comment-user">${replyAuthor?.username}</span>
+                                            <p class="comment-text">${reply.text}</p>
+                                            <div class="comment-actions">
+                                                <span class="comment-time">${getTimeAgo(reply.createdAt)}</span>
+                                                ${reply.userId === currentUser?.id ? '<button class="comment-action-btn delete" onclick="deleteComment(\'' + reply.id + '\', \'' + postId + '\')">Hapus</button>' : ''}
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    ` : ''}
                 </div>
-            `;
-        }).join('') :
-        '<p style="text-align: center; color: var(--text-muted); padding: 20px;">Belum ada komentar</p>';
+            </div>
+        `;
+    }).join('');
+}
+
+function showReplyInput(commentId) {
+    const replyInput = document.getElementById(`replyInput_${commentId}`);
+    if (replyInput) {
+        replyInput.style.display = replyInput.style.display === 'none' ? 'flex' : 'none';
+        if (replyInput.style.display === 'flex') {
+            document.getElementById(`replyText_${commentId}`).focus();
+        }
+    }
+}
+
+function addReply(commentId, postId) {
+    const input = document.getElementById(`replyText_${commentId}`);
+    if (!input || !input.value.trim()) return;
+    
+    const currentUser = DataStore.getCurrentUser();
+    if (!currentUser) return;
+    
+    const comments = DataStore.get(DataStore.KEYS.COMMENTS) || [];
+    comments.push({
+        id: 'comment_' + Date.now(),
+        postId,
+        userId: currentUser.id,
+        text: input.value.trim(),
+        parentId: commentId,
+        createdAt: Date.now()
+    });
+    
+    DataStore.set(DataStore.KEYS.COMMENTS, comments);
+    input.value = '';
+    showReplyInput(commentId);
+    loadComments(postId);
+    showToast('Balasan terkirim! 💬', 'success');
+}
+
+function deleteComment(commentId, postId) {
+    if (!confirm('Hapus komentar ini?')) return;
+    
+    let comments = DataStore.get(DataStore.KEYS.COMMENTS) || [];
+    // Remove comment and its replies
+    comments = comments.filter(c => c.id !== commentId && c.parentId !== commentId);
+    DataStore.set(DataStore.KEYS.COMMENTS, comments);
+    
+    // Update post comments count
+    const posts = DataStore.getPosts();
+    const post = posts.find(p => p.id === postId);
+    if (post) {
+        post.comments = Math.max(0, post.comments - 1);
+        DataStore.set(DataStore.KEYS.POSTS, posts);
+    }
+    
+    loadComments(postId);
+    loadPosts();
+    showToast('Komentar dihapus!', 'success');
 }
 
 function handleAddComment(event) {

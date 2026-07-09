@@ -1,8 +1,30 @@
-# Nexus - Platform Media Sosial
+# 🎉 Nexus - Platform Media Sosial
 
 Platform media sosial lengkap dengan fitur posting, stories, komentar, like, followers, pesan langsung, dan notifikasi.
 
 ![Nexus Preview](https://via.placeholder.com/800x400?text=Nexus+Social+Media+Platform)
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/antono4/-NEXUS-SOCIAL-MEDIA)
+
+## 🚀 Deploy ke Vercel
+
+### Cara 1: One-Click Deploy (Recommended)
+
+Klik tombol di atas atau kunjungi:
+```
+https://vercel.com/new/clone?repository-url=https://github.com/antono4/-NEXUS-SOCIAL-MEDIA
+```
+
+### Cara 2: Manual Deploy
+
+1. Buat akun di [vercel.com](https://vercel.com)
+2. Klik "Add New" → "Project"
+3. Import repository GitHub Anda
+4. Tambahkan Environment Variables:
+   - `DATABASE_URL` - PostgreSQL connection string
+   - `NEXTAUTH_SECRET` - Secret key (minimal 32 karakter)
+   - `NEXTAUTH_URL` - URL deployment Vercel
+5. Klik "Deploy"!
 
 ## ✨ Fitur
 
@@ -189,7 +211,7 @@ Project ini dilisensikan di bawah MIT License.
 
 ## 👨‍💻 Author
 
-Dibuat dengan ❤️ oleh [Your Name]
+Dibuat dengan ❤️ oleh [antono4](https://github.com/antono4)
 
 ---
 

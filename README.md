@@ -1,5 +1,8 @@
 # 🎉 Nexus Social Media Platform
 
+> **Created by Antono**
+
+
 Platform media sosial lengkap dengan **2 versi deployment**:
 
 | Versi | Deploy ke | Fitur |
